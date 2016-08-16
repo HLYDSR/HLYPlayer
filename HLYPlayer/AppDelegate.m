@@ -7,7 +7,9 @@
 //
 
 #import "AppDelegate.h"
-
+#import "DataManager.h"
+#import "Reachability.h"
+#import <AVFoundation/AVFoundation.h>
 @interface AppDelegate ()
 
 @end
@@ -16,10 +18,52 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    //检测和监测网络状态
+    _hostReach = [Reachability reachabilityWithHostName:@"www.baidu.com"];
+    NetworkStatus status = [_hostReach currentReachabilityStatus];
+    //观察者模式
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(change:) name:kReachabilityChangedNotification object:nil];
+    [_hostReach startNotifier];
+    
+    [[DataManager shareManager] getDataSoucesWithDone:^(NSArray *videoArray){
+        self.videoArray = [NSArray arrayWithArray:videoArray];
+        NSLog(@"videoArray = %@",videoArray);
+    }];
+    
+    NSError *setCategoryErr = nil;
+    NSError *activationErr  = nil;
+    [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: &setCategoryErr];
+    [[AVAudioSession sharedInstance] setActive: YES error: &activationErr];
     return YES;
 }
-
+//网络状态发生改变时会掉用
+-(void)change:(NSNotification *)notfication{
+    _hostReach = notfication.object;
+    NSLog(@"%ld",(long)_hostReach.currentReachabilityStatus);
+    
+    NSString *status = @"";
+    switch (_hostReach.currentReachabilityStatus) {
+        case NotReachable:{
+            status = @"无网络";
+        }break;
+        case ReachableViaWiFi:{
+            status = @"WIFI网络";
+        }break;
+        case ReachableViaWWAN:{
+            status = @"WAN网络";
+        }break;
+        default:
+        break;
+    }
+    NSLog(@"%@",status);
+            
+}
+- (BOOL)prefersStatusBarHidden
+{
+    // iOS7后,[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+    // 已经不起作用了
+    return YES;
+}
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
@@ -41,5 +85,7 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
-
++(AppDelegate *)shareAppDelegate{
+    return (AppDelegate *) [UIApplication sharedApplication].delegate;
+}
 @end
