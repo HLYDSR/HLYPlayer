@@ -10,6 +10,6 @@
 
 @interface TencentNewsViewController : UIViewController
 //tableview  
-@property (strong, nonatomic) IBOutlet UITableView *table;
+@property (strong, nonatomic) IBOutlet UITableView *tableViewtui;
 @property (strong, nonatomic)  NSMutableArray *dataSource;//数据源
 @end

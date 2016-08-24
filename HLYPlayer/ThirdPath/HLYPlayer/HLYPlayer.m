@@ -43,6 +43,8 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
 - (instancetype)initWithFrame:(CGRect)frame videoURLStr:(NSString *)videoURLStr{
     self = [super init];
     if (self) {
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(runback) name:@"APPRunBack" object:nil];
+        
         self.frame = frame;
         self.backgroundColor = [UIColor blackColor];
         self.currentItem = [self getPlayItemWithURLString:videoURLStr];
@@ -115,11 +117,9 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
         [self.progressSlider setThumbImage:[UIImage imageNamed:WMVideoSrcName(@"dot")] ?: [UIImage imageNamed:WMVideoFrameworkSrcName(@"dot")]  forState:UIControlStateNormal];
         self.progressSlider.minimumTrackTintColor = [UIColor yellowColor];
         self.progressSlider.value = 0.0;//指定初始值
-        
-//        [self.progressSlider addTarget:self action:@selector(updateProgress:) forControlEvents:UIControlEventTouchUpInside];
-        
         [self.bottomView addSubview:self.progressSlider];
         
+        //添加手势 拖动进度
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTap:)];
         [self.progressSlider addGestureRecognizer:tap];
         //拖动手势
@@ -165,6 +165,7 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
         }];
         
         [self bringSubviewToFront:self.bottomView];
+        
         _closeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _closeBtn.showsTouchWhenHighlighted = YES;
         [_closeBtn addTarget:self action:@selector(colseTheVideo:) forControlEvents:UIControlEventTouchUpInside];
@@ -179,10 +180,6 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
             make.top.equalTo(self).with.offset(5);
             make.width.mas_equalTo(30);
         }];
-        
-        
-       
-        
         
         //_playOrPauseBtn
         self.playOrPauseBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -234,7 +231,6 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
             make.bottom.equalTo(self).with.offset(0);
             make.right.mas_equalTo(0);
         }];
-        
         }
     return self;
 }
@@ -259,10 +255,7 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
     float minValue = [self.progressSlider minimumValue];
     float maxValue = [self.progressSlider maximumValue];
     double time = CMTimeGetSeconds([self.player currentTime]);
-//    [self currentTime] == [self duration]
-//    _timeLabel.text = [self convertTime:duration];
     _crutimeLabel.text=[self convertTime:time];
-//        NSLog(@"时间 :: %f",(maxValue - minValue) * time / duration + minValue);
     return  point.x * (maxValue - minValue) / self.progressSlider.frame.size.width + minValue;
 }
 
@@ -275,7 +268,6 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
     [activityView hidesWhenStopped];
     activityView.color = [UIColor whiteColor];
     [activityView startAnimating];
-   
 }
 
 - (void)updateSystemVolumeValue:(UISlider *)slider{
@@ -295,7 +287,6 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
         rect=CGRectMake(0, 0, SCREEN_FRAME.size.width, 184);
     }else{
         rect=CGRectMake(0, 0, SCREEN_FRAME.size.height, SCREEN_FRAME.size.width);
-        
     }
        if (self.activity.isHidden==NO) {
         _loadFaildLabel.hidden=NO;
@@ -404,6 +395,16 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
     [self.player seekToTime:CMTimeMakeWithSeconds(slider.value, 1)];
 }
 
+-(void)runback{
+    [self.player pause];
+    self.bottomView.alpha = 1.0;
+    self.playOrPauseBtn.hidden=NO;
+    self.closeBtn.alpha = 1.0;
+    self.progressView.alpha=0.0;
+
+    self.playOrPauseBtn.selected=YES;
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     /* AVPlayerItem "status" property value observer. */
     if (context == PlayViewStatusObservationContext)
@@ -423,14 +424,9 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
                     
                 }
                 _loadFaildLabel.hidden=@"正在加载中";
-//                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    //        dispatch_async(dispatch_get_main_queue(), ^{
                     [self showActivityIndicatorView:self.activity andFrame:rect inView:self];
-                    //        });
-//                });
             }
                 break;
-                
             case AVPlayerStatusReadyToPlay:
             {
                 
@@ -453,11 +449,8 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
                     self.autoDismissTimer = [NSTimer timerWithTimeInterval:5.0 target:self selector:@selector(autoDismissBottomView:) userInfo:nil repeats:YES];
                     [[NSRunLoop currentRunLoop] addTimer:self.autoDismissTimer forMode:NSDefaultRunLoopMode];
                 }
-                
-                
             }
                 break;
-                
             case AVPlayerStatusFailed:
             {
                 CGRect rect;
@@ -467,11 +460,7 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
                     rect=CGRectMake(0, 0, SCREEN_FRAME.size.height, SCREEN_FRAME.size.width);
                     
                 }
-                //                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                //        dispatch_async(dispatch_get_main_queue(), ^{
                 [self showActivityIndicatorView:self.activity andFrame:rect inView:self];
-                //        });
-                //                });
                 _loadFaildLabel.hidden=NO;
                 _loadFaildLabel.text=@"视频加载失败！！！！！！";
                 NSLog(@"视频加载失败！！！！！！");
@@ -506,7 +495,6 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
         
                 }else{
                     self.bottomView.alpha = 1.0;
-                    
                 }
     }else if(self.player.rate==1.0f){
         if (self.bottomView.alpha==1.0) {
@@ -542,6 +530,7 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
     }];
     
 }
+//给进度条 滑动条 和显示的时间label赋值
 - (void)syncScrubber{
     CMTime playerDuration = [self playerItemDuration];
     if (CMTIME_IS_INVALID(playerDuration)){
@@ -556,12 +545,11 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
         double time = CMTimeGetSeconds([self.player currentTime]);
         _timeLabel.text = [self convertTime:duration];
         _crutimeLabel.text=[self convertTime:time];
-//        NSLog(@"时间 :: %f",(maxValue - minValue) * time / duration + minValue);
         self.progressView.progress=time/duration;
         [self.progressSlider setValue:(maxValue - minValue) * time / duration + minValue];
     }
 }
-
+//计算总的时长
 - (CMTime)playerItemDuration{
     AVPlayerItem *playerItem = [self.player currentItem];
     if (playerItem.status == AVPlayerItemStatusReadyToPlay){
@@ -569,6 +557,7 @@ static void *PlayViewStatusObservationContext = &PlayViewStatusObservationContex
     }
     return(kCMTimeInvalid);
 }
+//计算当前播放时间
 - (NSString *)convertTime:(CGFloat)second{
     NSDate *d = [NSDate dateWithTimeIntervalSince1970:second];
     if (second/3600 >= 1) {

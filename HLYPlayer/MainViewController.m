@@ -34,7 +34,7 @@
             vic.dataSource=[NSMutableArray new];
         }
             [vic.dataSource addObjectsFromArray:[AppDelegate shareAppDelegate].videoArray];
-            [vic.table reloadData];
+            [vic.tableViewtui reloadData];
             [vics addObject:vic];
     }
     //创建滑动视图
