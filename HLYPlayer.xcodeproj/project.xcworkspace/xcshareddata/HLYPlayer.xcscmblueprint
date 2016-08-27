@@ -1,28 +1,20 @@
 {
-  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "1A666C9DCCB45A608B37E8DCEE55E1302F05B49C",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
     "3d598fef-304e-46d8-940e-79c4e810d450++9512" : {
 
     }
   },
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
-    "3d598fef-304e-46d8-940e-79c4e810d450++9512" : 0,
-    "1A666C9DCCB45A608B37E8DCEE55E1302F05B49C" : 0
+    "3d598fef-304e-46d8-940e-79c4e810d450++9512" : 0
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "2432A6E1-3F02-4EBD-A94D-A65247AEA77E",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
-    "3d598fef-304e-46d8-940e-79c4e810d450++9512" : "HLYPlayer\/HLYPlayer\/ThirdPath\/Reachability\/",
-    "1A666C9DCCB45A608B37E8DCEE55E1302F05B49C" : "HLYPlayer\/"
+    "3d598fef-304e-46d8-940e-79c4e810d450++9512" : "HLYPlayer\/HLYPlayer\/ThirdPath\/Reachability\/"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "HLYPlayer",
   "DVTSourceControlWorkspaceBlueprintVersion" : 204,
   "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "HLYPlayer.xcodeproj",
   "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
-    {
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/HLYDSR\/HLYPlayer.git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "1A666C9DCCB45A608B37E8DCEE55E1302F05B49C"
-    },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/192.168.130.17\/svn\/2012_Terminal_code",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",

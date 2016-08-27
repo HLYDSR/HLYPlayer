@@ -35,7 +35,6 @@
  *  进度条
  */
 @property(nonatomic,retain)UIProgressView *progressView;
-//滑动条
 @property(nonatomic,retain)UISlider *progressSlider;
 @property(nonatomic,retain)UISlider *volumeSlider;
 /**

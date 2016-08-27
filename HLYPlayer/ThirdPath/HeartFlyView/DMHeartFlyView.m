@@ -54,7 +54,7 @@ static CGFloat PI = M_PI;
         self.alpha = 0.9;
     } completion:NULL];
 
-    NSInteger i = arc4random_uniform(2);
+    NSInteger i = arc4random_uniform(3);
     NSInteger rotationDirection = 1- (2*i);// -1 OR 1
     NSInteger rotationFraction = arc4random_uniform(10);
     [UIView animateWithDuration:totalAnimationDuration animations:^{
